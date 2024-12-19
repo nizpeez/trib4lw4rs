@@ -60,9 +60,9 @@ $("#building_wrapper").prepend(`
     </tr>
     <tr>
         <th>Set Resources:</th>
-        <td class="res"><input type="number" id="manualWood" placeholder="Wood" style="width: 60px;"></td>
-        <td class="res"><input type="number" id="manualStone" placeholder="Stone" style="width: 60px;"></td>
-        <td class="res"><input type="number" id="manualIron" placeholder="Iron" style="width: 60px;"></td>
+        <td class="res"><input type="number" id="manualWood" placeholder="" style="width: 60px;"></td>
+        <td class="res"><input type="number" id="manualStone" placeholder="" style="width: 60px;"></td>
+        <td class="res"><input type="number" id="manualIron" placeholder="" style="width: 60px;"></td>
         <td>
             <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="manualRequest" value="Request Resources" onclick="manualRequestRes()">
         </td>
