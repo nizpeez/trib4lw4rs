@@ -20,8 +20,8 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 2px 8px;
-    font-size: 11px;
+    padding: 1px 1px 1px 18px;
+    font-size: 12px;
     text-align: center;
     vertical-align: middle;
 }
