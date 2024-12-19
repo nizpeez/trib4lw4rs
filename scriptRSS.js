@@ -17,18 +17,13 @@ var sourceStone = 0;
 var sourceIron = 0;
 var sourceMerchants = 0;
 
-cssClassesSophie = `
+cssClassesSophie = 
 <style>
 .res {
     padding: 1px 1px 1px 18px;
     font-size: 12px;
     text-align: center;
     vertical-align: middle;
-    width: 74px; 
-    max-width: 74px; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; 
 }
 .trclass:hover { background: #40D0E0 !important; }
 .trclass:hover td { background: transparent; }
@@ -48,8 +43,7 @@ cssClassesSophie = `
     position: relative;
     top: 0px;
 }
-</style>`;
-
+</style>;
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
