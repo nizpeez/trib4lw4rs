@@ -20,7 +20,7 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 5px 10px;
+    padding: 1px 1px 1px 18px;
     font-size: 12px;
     text-align: center;
 }
