@@ -20,8 +20,8 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 3px 10px;
-    font-size: 10px;
+    padding: 3px 5px;
+    font-size: 11px;
     text-align: center;
 }
 .trclass:hover { background: #40D0E0 !important; }
