@@ -56,17 +56,11 @@ function manualRequestRes() {
         return;
     }
 
-    console.log("Preparing to request resources:", { 
-        sourceID: sourceID, 
-        target_id: game_data.village.id, 
-        wood: manualWood, 
-        stone: manualStone, 
-        iron: manualIron 
-    });
+    console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron, sourceID });
 
-    // Realiza a chamada ao servidor
-    TribalWars.post('market', 
-        { ajaxaction: 'call', village: game_data.village.id }, 
+    TribalWars.post(
+        'market',
+        { ajaxaction: 'call', village: game_data.village.id },
         {
             "select-village": sourceID,
             "target_id": game_data.village.id,
@@ -75,21 +69,23 @@ function manualRequestRes() {
                 "stone": manualStone,
                 "iron": manualIron
             }
-        }, 
+        },
         function (response) {
             if (response.error) {
-                console.error("Server returned an error:", response.error);
+                console.error("Error from server:", response.error);
                 alert("Error: " + response.error);
             } else {
-                UI.SuccessMessage(`Resources requested successfully: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
-                console.log("Request completed successfully:", response);
+                UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
+                console.log("Request successful:", response);
             }
+        },
+        function (error) {
+            console.error("Request failed:", error);
+            alert("Request failed. Please check your connection or try again later.");
         }
-    ).fail(function (jqXHR, textStatus, errorThrown) {
-        console.error("Request failed:", textStatus, errorThrown);
-        alert("Request failed. Please check your connection or try again later.");
-    });
+    );
 }
+
 
 
 function showSourceSelect() {
