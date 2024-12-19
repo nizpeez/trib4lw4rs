@@ -87,11 +87,43 @@ function displaySourceSelection() {
     Dialog.show("Content", htmlSelection);
 }
 
+// Adiciona a interface para entrada de recursos manuais e para alterar a fonte
+$("#building_wrapper").prepend(`
+<table>
+    <tr>
+        <th id="currentSelection">No village chosen</th>
+        <th>Res:</th>
+        <td class="res"><span class="icon header wood"></span><span id="sourceWood">0</span></td>
+        <td class="res"><span class="icon header stone"></span><span id="sourceStone">0</span></td>
+        <td class="res"><span class="icon header iron"></span><span id="sourceIron">0</span></td>
+        <th>Merchants:</th>
+        <td class="res"><span id="sourceMerchants">0</span></td>
+        <td>
+            <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="manualRequest" value="Request Resources" onclick="manualRequestRes()">
+        </td>
+        <td>
+            <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="showSourceSelect" value="Change Source" onclick="showSourceSelect()">
+        </td>
+    </tr>
+</table>
+`);
+
+// Função para armazenar a aldeia fonte selecionada e atualizar os recursos e mercadores
 function storeSourceID(id, name, wood, stone, iron, merchants) {
     sourceID = id;
+    sourceWood = wood;
+    sourceStone = stone;
+    sourceIron = iron;
+    sourceMerchants = merchants;
     UI.SuccessMessage(`Using ${name} as source village.`);
     $("#currentSelection").text(name);
+    $("#sourceWood").text(sourceWood);
+    $("#sourceStone").text(sourceStone);
+    $("#sourceIron").text(sourceIron);
+    $("#sourceMerchants").text(sourceMerchants);
+    Dialog.close();
 }
+
 
 function checkDistance(x1, y1, x2, y2) {
     let a = x1 - x2;
