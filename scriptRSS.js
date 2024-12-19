@@ -58,8 +58,8 @@ function manualRequestRes() {
 
     console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron, sourceID });
 
-    TribalWars.post(
-        'market',
+    // Realiza a chamada ao servidor com callbacks para sucesso e falha
+    TribalWars.post('market',
         { ajaxaction: 'call', village: game_data.village.id },
         {
             "select-village": sourceID,
@@ -78,13 +78,14 @@ function manualRequestRes() {
                 UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
                 console.log("Request successful:", response);
             }
-        },
-        function (error) {
-            console.error("Request failed:", error);
+        }, 
+        function () {
+            console.error("Request failed. Check your connection or the server status.");
             alert("Request failed. Please check your connection or try again later.");
         }
     );
 }
+
 
 
 
