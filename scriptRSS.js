@@ -20,7 +20,7 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 3px 10px;
+    padding: 5px 10px;
     font-size: 12px;
     text-align: center;
 }
@@ -28,7 +28,7 @@ cssClassesSophie = `
 .trclass:hover td { background: transparent; }
 .vis td, .vis th {
     padding: 5px;
-    font-size: 15px;
+    font-size: 12px;
     line-height: 20px;
     vertical-align: middle;
 }
