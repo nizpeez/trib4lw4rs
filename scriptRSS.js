@@ -17,7 +17,32 @@ var sourceStone = 0;
 var sourceIron = 0;
 var sourceMerchants = 0;
 
-
+cssClassesSophie = `
+<style>
+.res {
+    padding: 3px 10px;
+    font-size: 12px;
+    text-align: center;
+}
+.trclass:hover { background: #40D0E0 !important; }
+.trclass:hover td { background: transparent; }
+.vis td, .vis th {
+    padding: 5px;
+    font-size: 15px;
+    line-height: 20px;
+    vertical-align: middle;
+}
+.vis th {
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #d3d3d3;
+}
+.vis .icon {
+    margin-right: 5px;
+    vertical-align: middle;
+    position: relative;
+    top: 1px;
+}
+</style>`;
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
