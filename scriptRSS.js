@@ -40,11 +40,7 @@ cssClassesSophie = `
     margin-right: 5px;
     vertical-align: middle;
     position: relative;
-    top: 2px;
-}
-.vis .res-value {
-    padding-left: 5px;
-    vertical-align: middle;
+    top: 1px;
 }
 </style>`;
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
@@ -87,12 +83,13 @@ function showSourceSelect() {
             let tempY = rowsResPage.eq(index).find("span.quickedit-vn").text().trim().match(/(\d+)\|(\d+)/)[2];
             let tempDistance = checkDistance(tempX, tempY, game_data.village.x, game_data.village.y);
             let tempResourcesHTML = rowsResPage[index].children[3].innerHTML;
-            let tempWood = $(rowsResPage[index].children[3]).find(".wood").text().replace(".", "");
-            let tempStone = $(rowsResPage[index].children[3]).find(".stone").text().replace(".", "");
-            let tempIron = $(rowsResPage[index].children[3]).find(".iron").text().replace(".", "");
+            let tempWood = $(rowsResPage[index].children[3]).find(".wood").text().replace(".", "") || "0";
+            let tempStone = $(rowsResPage[index].children[3]).find(".stone").text().replace(".", "") || "0";
+            let tempIron = $(rowsResPage[index].children[3]).find(".iron").text().replace(".", "") || "0";
             let tempVillageID = $(rowsResPage).eq(index).find('span[data-id]').attr("data-id");
             let tempVillageName = $(rowsResPage).eq(index).find('.quickedit-label').text().trim();
-            let tempMerchants = rowsResPage[index].children[5].innerText;
+            let tempMerchantsMatch = (rowsResPage[index].children[5].innerText && rowsResPage[index].children[5].innerText.match(/(\d+)\//)) || [];
+            let tempMerchants = tempMerchantsMatch[1] || "0";
 
             if (tempVillageID != game_data.village.id) {
                 sources.push({ 
@@ -127,9 +124,9 @@ function displaySourceSelection() {
             </tr>`;
     $.each(sources, function (ind) {
         htmlSelection += `
-            <tr class="trclass" style="cursor: pointer" onclick="storeSourceID(${sources[ind].id},'${sources[ind].name}',${sources[ind].wood},${sources[ind].stone},${sources[ind].iron},${sources[ind].merchants.match(/(\d+)\//)[1]})">
+            <tr class="trclass" style="cursor: pointer" onclick="storeSourceID(${sources[ind].id},'${sources[ind].name}',${sources[ind].wood},${sources[ind].stone},${sources[ind].iron},${sources[ind].merchants})">
                 <td>${sources[ind].name}</td>
-                <td><span class="icon wood"></span><span class="res-value">${sources[ind].wood}</span> <span class="icon stone"></span><span class="res-value">${sources[ind].stone}</span> <span class="icon iron"></span><span class="res-value">${sources[ind].iron}</span></td>
+                <td>${sources[ind].resources}</td>
                 <td>${sources[ind].distance}</td>
                 <td>${sources[ind].merchants}</td>
             </tr>`;
