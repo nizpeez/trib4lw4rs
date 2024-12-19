@@ -51,7 +51,10 @@ function manualRequestRes() {
         return;
     }
 
-    if (manualWood + sourceWood > WHCap || manualStone + sourceStone > WHCap || manualIron + sourceIron > WHCap) {
+    // Verificar se os recursos solicitados não excedem a capacidade do armazém
+    if ((manualWood + game_data.village.wood > WHCap) ||
+        (manualStone + game_data.village.stone > WHCap) ||
+        (manualIron + game_data.village.iron > WHCap)) {
         alert("Not enough storage space for this action!");
         return;
     }
@@ -61,15 +64,15 @@ function manualRequestRes() {
     TribalWars.post(
         'market',
         { ajaxaction: 'call', village: game_data.village.id },
-        JSON.stringify({
-            "select-village": sourceID.toString(),
-            "target_id": game_data.village.id.toString(),
+        {
+            "select-village": sourceID,
+            "target_id": game_data.village.id,
             "resource": {
-                "wood": manualWood.toString(),
-                "stone": manualStone.toString(),
-                "iron": manualIron.toString()
+                "wood": manualWood,
+                "stone": manualStone,
+                "iron": manualIron
             }
-        }),
+        },
         function (response) {
             if (response.error) {
                 console.error("Error from server:", response.error);
@@ -77,6 +80,14 @@ function manualRequestRes() {
             } else {
                 UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
                 console.log("Request successful:", response);
+
+                // Atualizar os valores locais para refletir a nova reserva
+                sourceWood -= manualWood;
+                sourceStone -= manualStone;
+                sourceIron -= manualIron;
+                $("#sourceWood").text(sourceWood);
+                $("#sourceStone").text(sourceStone);
+                $("#sourceIron").text(sourceIron);
             }
         },
         function () {
@@ -85,6 +96,7 @@ function manualRequestRes() {
         }
     );
 }
+
 
 
 
