@@ -51,40 +51,40 @@ function manualRequestRes() {
         return;
     }
 
-    // Verificar se os recursos solicitados não excedem a capacidade do armazém
-    if ((manualWood + game_data.village.wood > WHCap) ||
-        (manualStone + game_data.village.stone > WHCap) ||
-        (manualIron + game_data.village.iron > WHCap)) {
+    if (manualWood + game_data.village.wood > WHCap ||
+        manualStone + game_data.village.stone > WHCap ||
+        manualIron + game_data.village.iron > WHCap) {
         alert("Not enough storage space for this action!");
         return;
     }
 
-    console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron, sourceID });
+    console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron });
 
     TribalWars.post(
         'market',
         { ajaxaction: 'call', village: game_data.village.id },
         {
-            "select-village": sourceID,
-            "target_id": game_data.village.id,
+            "select-village": sourceID.toString(),
+            "target_id": game_data.village.id.toString(),
             "resource": {
-                "wood": manualWood,
-                "stone": manualStone,
-                "iron": manualIron
+                "wood": manualWood.toString(),
+                "stone": manualStone.toString(),
+                "iron": manualIron.toString()
             }
         },
         function (response) {
             if (response.error) {
-                console.error("Error from server:", response.error);
+                console.error("Server Error:", response.error);
                 alert("Error: " + response.error);
             } else {
                 UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
                 console.log("Request successful:", response);
 
-                // Atualizar os valores locais para refletir a nova reserva
+                // Atualizar a interface com os novos valores
                 sourceWood -= manualWood;
                 sourceStone -= manualStone;
                 sourceIron -= manualIron;
+
                 $("#sourceWood").text(sourceWood);
                 $("#sourceStone").text(sourceStone);
                 $("#sourceIron").text(sourceIron);
@@ -96,6 +96,7 @@ function manualRequestRes() {
         }
     );
 }
+
 
 
 
