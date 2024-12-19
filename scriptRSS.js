@@ -17,20 +17,17 @@ var sourceStone = 0;
 var sourceIron = 0;
 var sourceMerchants = 0;
 
-cssClassesSophie = 
+cssClassesSophie = `
 <style>
 .res {
     padding: 1px 1px 1px 18px;
-    font-size: 12px;
-    text-align: center;
-    vertical-align: middle;
-}
+    }
 .trclass:hover { background: #40D0E0 !important; }
 .trclass:hover td { background: transparent; }
 .vis td, .vis th {
-    padding: 3px;
+    padding: 4px;
     font-size: 11px;
-    line-height: 18px;
+    line-height: 16px;
     vertical-align: middle;
 }
 .vis th {
@@ -43,8 +40,7 @@ cssClassesSophie =
     position: relative;
     top: 0px;
 }
-</style>;
-
+</style>`;
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
@@ -62,9 +58,9 @@ $("#building_wrapper").prepend(`
     </tr>
     <tr>
         <th>Set Resources:</th>
-        <td class="res"><input type="number" id="manualWood" placeholder="" style="width: 60px;"></td>
-        <td class="res"><input type="number" id="manualStone" placeholder="" style="width: 60px;"></td>
-        <td class="res"><input type="number" id="manualIron" placeholder="" style="width: 60px;"></td>
+        <td class="res"><input type="number" id="manualWood" placeholder="Wood" style="width: 50px;"></td>
+        <td class="res"><input type="number" id="manualStone" placeholder="Stone" style="width: 50px;"></td>
+        <td class="res"><input type="number" id="manualIron" placeholder="Iron" style="width: 50px;"></td>
         <td>
             <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="manualRequest" value="Request Resources" onclick="manualRequestRes()">
         </td>
