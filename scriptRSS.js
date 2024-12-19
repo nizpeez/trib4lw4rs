@@ -1,176 +1,138 @@
-// Redirecionar para a tela principal, se necessário
 if (window.location.href.indexOf('&screen=main') < 0) {
     window.location.assign(game_data.link_base_pure + "main");
 }
 
 var sourceID = 0;
+var resource = {};
 var sources = [];
-var sourceWood = 0;
-var sourceStone = 0;
-var sourceIron = 0;
-var sourceMerchants = 0;
+var WHWoodCap = game_data.village.wood;
+var WHStoneCap = game_data.village.stone;
+var WHIronCap = game_data.village.iron;
 var WHCap = game_data.village.storage_max;
 
-cssClassesSophie = `
-<style>
-.res{
-padding: 1px 1px 1px 18px;
-}
-.trclass:hover { background: #40D0E0 !important; }
-.trclass:hover td { background: transparent; }
-</style>`;
-
-$("#contentContainer").eq(0).prepend(cssClassesSophie);
-$("#mobileHeader").eq(0).prepend(cssClassesSophie);
 $("#building_wrapper").prepend(`
-<table><tr>
-<th id="currentSelection">No village chosen</th>
-<th>Res:</th>
-<td class="res"><span class="icon header wood"></span><span id="sourceWood">0</span></td>
-<td class="res"><span class="icon header stone"></span><span id="sourceStone">0</span></td>
-<td class="res"><span class="icon header iron"></span><span id="sourceIron">0</span></td>
-<th>Merchants:</th>
-<td class="res"><span id="sourceMerchants">0</span></td>
-</tr><tr>
-<th>Set Resources:</th>
-<td class="res"><input type="number" id="manualWood" placeholder="Wood"></td>
-<td class="res"><input type="number" id="manualStone" placeholder="Stone"></td>
-<td class="res"><input type="number" id="manualIron" placeholder="Iron"></td>
-<th><input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="requestResources" onclick="manualRequestRes()" value="Request Resources"></th>
-<th><input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="showSourceSelect" onclick="showSourceSelect()" value="Change Source"></th>
-</tr></table>
+<table>
+    <tr>
+        <th id="currentSelection">No village chosen</th>
+        <th>Set Resources:</th>
+        <td class="res"><span class="icon header wood"></span><input type="number" id="manualWood" placeholder="Wood" style="width: 60px;"></td>
+        <td class="res"><span class="icon header stone"></span><input type="number" id="manualStone" placeholder="Stone" style="width: 60px;"></td>
+        <td class="res"><span class="icon header iron"></span><input type="number" id="manualIron" placeholder="Iron" style="width: 60px;"></td>
+        <td>
+            <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="manualRequest" value="Request Resources" onclick="manualRequestRes()">
+        </td>
+        <td>
+            <input type="button" class="btn evt-confirm-btn btn-confirm-yes" id="showSourceSelect" value="Change Source" onclick="showSourceSelect()">
+        </td>
+    </tr>
+</table>
 `);
-
-function manualRequestRes() {
-    var manualWood = parseInt($("#manualWood").val()) || 0;
-    var manualStone = parseInt($("#manualStone").val()) || 0;
-    var manualIron = parseInt($("#manualIron").val()) || 0;
-
-    if (sourceID === 0) {
-        alert("No source village selected. Please select a source using 'Change Source'.");
-        return;
-    }
-
-    if (manualWood + game_data.village.wood > WHCap ||
-        manualStone + game_data.village.stone > WHCap ||
-        manualIron + game_data.village.iron > WHCap) {
-        alert("Not enough storage space for this action!");
-        return;
-    }
-
-    console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron });
-
-    TribalWars.post(
-        'market',
-        { ajaxaction: 'call', village: game_data.village.id },
-        {
-            "select-village": sourceID.toString(),
-            "target_id": game_data.village.id.toString(),
-            "resource": {
-                "wood": manualWood.toString(),
-                "stone": manualStone.toString(),
-                "iron": manualIron.toString()
-            }
-        },
-        function (response) {
-            if (response.error) {
-                console.error("Server Error:", response.error);
-                alert("Error: " + response.error);
-            } else {
-                UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
-                console.log("Request successful:", response);
-
-                // Atualizar a interface com os novos valores
-                sourceWood -= manualWood;
-                sourceStone -= manualStone;
-                sourceIron -= manualIron;
-
-                $("#sourceWood").text(sourceWood);
-                $("#sourceStone").text(sourceStone);
-                $("#sourceIron").text(sourceIron);
-            }
-        },
-        function () {
-            console.error("Request failed. Check your connection or the server status.");
-            alert("Request failed. Please check your connection or try again later.");
-        }
-    );
-}
-
-
-
-
-
-
 
 function showSourceSelect() {
     sources = [];
     $.get("/game.php?&screen=overview_villages&mode=prod&group=0&page=-1&", function (resourcePage) {
-        rowsResPage = $(resourcePage).find("#production_table tr").not(":first");
+        let rowsResPage = $(resourcePage).find("#production_table tr").not(":first");
         $.each(rowsResPage, function (index) {
-            var tempX = $(this).find("span.quickedit-vn").text().trim().match(/(\d+)\|(\d+)/)[1];
-            var tempY = $(this).find("span.quickedit-vn").text().trim().match(/(\d+)\|(\d+)/)[2];
-            var tempDistance = Math.hypot(tempX - game_data.village.x, tempY - game_data.village.y);
-            var tempResourcesHTML = this.children[3].innerHTML;
-            var tempWood = $(this.children[3]).find(".wood").text().replace(".", "");
-            var tempStone = $(this.children[3]).find(".stone").text().replace(".", "");
-            var tempIron = $(this.children[3]).find(".iron").text().replace(".", "");
-            var tempVillageID = $(this).find('span[data-id]').attr("data-id");
-            var tempVillageName = $(this).find('.quickedit-label').text().trim();
-            var tempMerchants = this.children[5].innerText;
+            let tempX = rowsResPage.eq(index).find("span.quickedit-vn").text().trim().match(/(\d+)\|(\d+)/)[1];
+            let tempY = rowsResPage.eq(index).find("span.quickedit-vn").text().trim().match(/(\d+)\|(\d+)/)[2];
+            let tempDistance = checkDistance(tempX, tempY, game_data.village.x, game_data.village.y);
+            let tempResourcesHTML = rowsResPage[index].children[3].innerHTML;
+            let tempWood = $(rowsResPage[index].children[3]).find(".wood").text().replace(".", "");
+            let tempStone = $(rowsResPage[index].children[3]).find(".stone").text().replace(".", "");
+            let tempIron = $(rowsResPage[index].children[3]).find(".iron").text().replace(".", "");
+            let tempVillageID = $(rowsResPage).eq(index).find('span[data-id]').attr("data-id");
+            let tempVillageName = $(rowsResPage).eq(index).find('.quickedit-label').text().trim();
+            let tempMerchants = rowsResPage[index].children[5].innerText;
 
             if (tempVillageID != game_data.village.id) {
-                sources.push({
-                    "name": tempVillageName,
-                    "id": tempVillageID,
-                    "resources": tempResourcesHTML,
-                    "x": tempX,
-                    "y": tempY,
-                    "distance": tempDistance,
-                    "wood": tempWood,
-                    "stone": tempStone,
+                sources.push({ 
+                    "name": tempVillageName, 
+                    "id": tempVillageID, 
+                    "resources": tempResourcesHTML, 
+                    "x": tempX, 
+                    "y": tempY, 
+                    "distance": tempDistance, 
+                    "wood": tempWood, 
+                    "stone": tempStone, 
                     "iron": tempIron,
-                    "merchants": tempMerchants
+                    "merchants": tempMerchants 
                 });
             }
         });
 
         sources.sort(function (left, right) { return left.distance - right.distance; });
+        displaySourceSelection();
+    });
+}
 
-        var htmlSelection = `<div style='width:700px;'><h1>Select village where resources will be pulled from</h1><br><table class="vis" style='width:700px;'>
+function displaySourceSelection() {
+    let htmlSelection = `<div style='width:700px;'><h1>Select village where resources will be pulled from</h1><br>
+        <table class="vis" style='width:700px;'>
             <tr>
-                <th>Village Name</th>
+                <th>Village name</th>
                 <th>Resources</th>
                 <th>Distance</th>
                 <th>Merchants</th>
             </tr>`;
-
-        $.each(sources, function (ind) {
-            htmlSelection += `
-            <tr class="trclass" style="cursor: pointer" onclick="storeSourceID(${this.id}, '${this.name}', ${this.wood}, ${this.stone}, ${this.iron}, ${this.merchants.match(/(\d+)\//)[1]})">
-                <td>${this.name}</td>
-                <td>${this.resources}</td>
-                <td>${this.distance.toFixed(1)}</td>
-                <td>${this.merchants}</td>
+    $.each(sources, function (ind) {
+        htmlSelection += `
+            <tr class="trclass" style="cursor: pointer" onclick="storeSourceID(${sources[ind].id},'${sources[ind].name}',${sources[ind].wood},${sources[ind].stone},${sources[ind].iron},${sources[ind].merchants.match(/(\d+)\//)[1]})">
+                <td>${sources[ind].name}</td>
+                <td>${sources[ind].resources}</td>
+                <td>${sources[ind].distance}</td>
+                <td>${sources[ind].merchants}</td>
             </tr>`;
-        });
-
-        htmlSelection += "</table></div>";
-
-        Dialog.show("Content", htmlSelection);
     });
+    htmlSelection += "</table></div>";
+    Dialog.show("Content", htmlSelection);
 }
 
 function storeSourceID(id, name, wood, stone, iron, merchants) {
     sourceID = id;
-    sourceWood = parseInt(wood);
-    sourceStone = parseInt(stone);
-    sourceIron = parseInt(iron);
-    sourceMerchants = parseInt(merchants);
     UI.SuccessMessage(`Using ${name} as source village.`);
     $("#currentSelection").text(name);
-    $("#sourceWood").text(sourceWood);
-    $("#sourceStone").text(sourceStone);
-    $("#sourceIron").text(sourceIron);
-    $("#sourceMerchants").text(sourceMerchants);
 }
+
+function checkDistance(x1, y1, x2, y2) {
+    let a = x1 - x2;
+    let b = y1 - y2;
+    return Math.round(Math.hypot(a, b));
+}
+
+function manualRequestRes() {
+    let manualWood = parseInt($("#manualWood").val()) || 0;
+    let manualStone = parseInt($("#manualStone").val()) || 0;
+    let manualIron = parseInt($("#manualIron").val()) || 0;
+
+    if (!sourceID) {
+        alert("Please select a source village first!");
+        return;
+    }
+
+    if (manualWood + WHWoodCap > WHCap || manualStone + WHStoneCap > WHCap || manualIron + WHIronCap > WHCap) {
+        alert("Not enough storage space for this action!");
+        throw Error("Out of space");
+    }
+
+    resource[sourceID] = {
+        "wood": manualWood,
+        "stone": manualStone,
+        "iron": manualIron
+    };
+
+    TribalWars.post('market', { ajaxaction: 'call', village: game_data.village.id }, {
+        "select-village": sourceID,
+        "target_id": game_data.village.id,
+        "resource": {
+            "wood": manualWood,
+            "stone": manualStone,
+            "iron": manualIron
+        }
+    }, function (e) {
+        UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
+    }).fail(function () {
+        alert("Request failed. Please check your connection or try again later.");
+    });
+}
+
+showSourceSelect();
