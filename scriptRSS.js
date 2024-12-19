@@ -20,16 +20,17 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 1px 1px 1px 18px;
-    font-size: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
     text-align: center;
+    vertical-align: middle;
 }
 .trclass:hover { background: #40D0E0 !important; }
 .trclass:hover td { background: transparent; }
 .vis td, .vis th {
-    padding: 5px;
-    font-size: 12px;
-    line-height: 20px;
+    padding: 3px;
+    font-size: 11px;
+    line-height: 18px;
     vertical-align: middle;
 }
 .vis th {
@@ -37,12 +38,13 @@ cssClassesSophie = `
     border-bottom: 1px solid #d3d3d3;
 }
 .vis .icon {
-    margin-right: 5px;
+    margin-right: 3px;
     vertical-align: middle;
     position: relative;
-    top: 1px;
+    top: 0px;
 }
 </style>`;
+
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
