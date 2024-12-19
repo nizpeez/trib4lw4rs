@@ -26,7 +26,7 @@ cssClassesSophie = `
 .trclass:hover td { background: transparent; }
 .vis td, .vis th {
     padding: 4px;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 16px;
     vertical-align: middle;
 }
