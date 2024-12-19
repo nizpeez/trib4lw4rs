@@ -20,17 +20,19 @@ var sourceMerchants = 0;
 cssClassesSophie = `
 <style>
 .res {
-    padding: 3px 10px;
+    padding: 5px 10px;
     font-size: 12px;
     text-align: center;
+    white-space: nowrap;
 }
 .trclass:hover { background: #40D0E0 !important; }
 .trclass:hover td { background: transparent; }
 .vis td, .vis th {
-    padding: 5px;
-    font-size: 12px;
+    padding: 8px 12px;
+    font-size: 13px;
     line-height: 20px;
     vertical-align: middle;
+    text-align: center;
 }
 .vis th {
     background-color: #f4f4f4;
@@ -40,9 +42,10 @@ cssClassesSophie = `
     margin-right: 5px;
     vertical-align: middle;
     position: relative;
-    top: 1px;
+    top: 0;
 }
 </style>`;
+
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
