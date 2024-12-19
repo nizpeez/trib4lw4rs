@@ -56,29 +56,41 @@ function manualRequestRes() {
         return;
     }
 
-    console.log("Requesting resources:", { wood: manualWood, stone: manualStone, iron: manualIron, sourceID });
+    console.log("Preparing to request resources:", { 
+        sourceID: sourceID, 
+        target_id: game_data.village.id, 
+        wood: manualWood, 
+        stone: manualStone, 
+        iron: manualIron 
+    });
 
-    TribalWars.post('market', { ajaxaction: 'call', village: game_data.village.id }, {
-        "select-village": sourceID,
-        "target_id": game_data.village.id,
-        "resource": {
-            "wood": manualWood,
-            "stone": manualStone,
-            "iron": manualIron
+    // Realiza a chamada ao servidor
+    TribalWars.post('market', 
+        { ajaxaction: 'call', village: game_data.village.id }, 
+        {
+            "select-village": sourceID,
+            "target_id": game_data.village.id,
+            "resource": {
+                "wood": manualWood,
+                "stone": manualStone,
+                "iron": manualIron
+            }
+        }, 
+        function (response) {
+            if (response.error) {
+                console.error("Server returned an error:", response.error);
+                alert("Error: " + response.error);
+            } else {
+                UI.SuccessMessage(`Resources requested successfully: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
+                console.log("Request completed successfully:", response);
+            }
         }
-    }, function (response) {
-        if (response.error) {
-            console.error("Error from server:", response.error);
-            alert("Error: " + response.error);
-        } else {
-            UI.SuccessMessage(`Resources requested: ${manualWood} wood, ${manualStone} stone, ${manualIron} iron.`);
-            console.log("Request successful:", response);
-        }
-    }).fail(function (jqXHR, textStatus, errorThrown) {
+    ).fail(function (jqXHR, textStatus, errorThrown) {
         console.error("Request failed:", textStatus, errorThrown);
         alert("Request failed. Please check your connection or try again later.");
     });
 }
+
 
 function showSourceSelect() {
     sources = [];
