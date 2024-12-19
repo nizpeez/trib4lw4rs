@@ -44,6 +44,7 @@ cssClassesSophie =
     top: 0px;
 }
 </style>;
+
 $("#contentContainer").eq(0).prepend(cssClassesSophie);
 $("#mobileHeader").eq(0).prepend(cssClassesSophie);
 
