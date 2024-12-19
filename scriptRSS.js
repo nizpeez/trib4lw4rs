@@ -21,7 +21,7 @@ cssClassesSophie = `
 <style>
 .res {
     padding: 3px 10px;
-    font-size: 12px;
+    font-size: 10px;
     text-align: center;
 }
 .trclass:hover { background: #40D0E0 !important; }
