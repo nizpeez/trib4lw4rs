@@ -24,6 +24,11 @@ cssClassesSophie = `
     font-size: 12px;
     text-align: center;
     vertical-align: middle;
+    width: 74px; 
+    max-width: 74px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; 
 }
 .trclass:hover { background: #40D0E0 !important; }
 .trclass:hover td { background: transparent; }
