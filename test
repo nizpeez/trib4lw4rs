@@ -1,115 +1,121 @@
-// Alteração do script para suportar percentagens personalizadas de recursos
-var woodTargetPercent = 0, clayTargetPercent = 0, ironTargetPercent = 0;
+// Alteração do script para suportar percentagens personalizadas de recursos e carregamento via bookmarklet
+javascript:(function() {
+    var woodTargetPercent = 0, clayTargetPercent = 0, ironTargetPercent = 0;
 
-function createList() {
-    // UI para definir percentagens de recursos desejados
-    var htmlString = `
-        <div id="resourceRequest">
-            <table id="Settings" width="600">
-                <thead>
-                    <tr>
-                        <td class="sophHeader">Percentual de Madeira</td>
-                        <td class="sophHeader">Percentual de Argila</td>
-                        <td class="sophHeader">Percentual de Ferro</td>
-                        <td class="sophHeader"></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="sophRowA">
-                            <input type="text" id="woodTargetPercent" size="2" align="right">%
-                        </td>
-                        <td class="sophRowA">
-                            <input type="text" id="clayTargetPercent" size="2" align="right">%
-                        </td>
-                        <td class="sophRowA">
-                            <input type="text" id="ironTargetPercent" size="2" align="right">%
-                        </td>
-                        <td class="sophRowA">
-                            <button type="button" id="requestResources" class="btn-confirm-yes">Request</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>`;
+    function createList() {
+        // UI para definir percentagens de recursos desejados
+        var htmlString = `
+            <div id="resourceRequest">
+                <table id="Settings" width="600">
+                    <thead>
+                        <tr>
+                            <td class="sophHeader">Percentual de Madeira</td>
+                            <td class="sophHeader">Percentual de Argila</td>
+                            <td class="sophHeader">Percentual de Ferro</td>
+                            <td class="sophHeader"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="sophRowA">
+                                <input type="text" id="woodTargetPercent" size="2" align="right">%
+                            </td>
+                            <td class="sophRowA">
+                                <input type="text" id="clayTargetPercent" size="2" align="right">%
+                            </td>
+                            <td class="sophRowA">
+                                <input type="text" id="ironTargetPercent" size="2" align="right">%
+                            </td>
+                            <td class="sophRowA">
+                                <button type="button" id="requestResources" class="btn-confirm-yes">Request</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>`;
 
-    $("#contentContainer").prepend(htmlString);
+        $("#contentContainer").prepend(htmlString);
 
-    // Event listener para processar o pedido de recursos
-    $("#requestResources").click(function () {
-        woodTargetPercent = parseInt($("#woodTargetPercent").val()) || 0;
-        clayTargetPercent = parseInt($("#clayTargetPercent").val()) || 0;
-        ironTargetPercent = parseInt($("#ironTargetPercent").val()) || 0;
+        // Event listener para processar o pedido de recursos
+        $("#requestResources").click(function () {
+            woodTargetPercent = parseInt($("#woodTargetPercent").val()) || 0;
+            clayTargetPercent = parseInt($("#clayTargetPercent").val()) || 0;
+            ironTargetPercent = parseInt($("#ironTargetPercent").val()) || 0;
 
-        if (woodTargetPercent + clayTargetPercent + ironTargetPercent <= 100) {
-            coordToId(coordinate);
-        } else {
-            alert("A soma dos percentuais não pode ultrapassar 100%.");
-        }
-    });
-}
+            if (woodTargetPercent + clayTargetPercent + ironTargetPercent <= 100) {
+                coordToId(coordinate);
+            } else {
+                alert("A soma dos percentuais não pode ultrapassar 100%.");
+            }
+        });
+    }
 
-function calculateDeficit(warehouseCapacity, woodPercent, clayPercent, ironPercent, currentWood, currentClay, currentIron) {
-    return {
-        woodNeeded: Math.max(0, Math.floor(warehouseCapacity * (woodPercent / 100)) - currentWood),
-        clayNeeded: Math.max(0, Math.floor(warehouseCapacity * (clayPercent / 100)) - currentClay),
-        ironNeeded: Math.max(0, Math.floor(warehouseCapacity * (ironPercent / 100)) - currentIron),
-    };
-}
+    function calculateDeficit(warehouseCapacity, woodPercent, clayPercent, ironPercent, currentWood, currentClay, currentIron) {
+        return {
+            woodNeeded: Math.max(0, Math.floor(warehouseCapacity * (woodPercent / 100)) - currentWood),
+            clayNeeded: Math.max(0, Math.floor(warehouseCapacity * (clayPercent / 100)) - currentClay),
+            ironNeeded: Math.max(0, Math.floor(warehouseCapacity * (ironPercent / 100)) - currentIron),
+        };
+    }
 
-function sendToTarget(villagesData, target, deficits) {
-    for (let village of villagesData) {
-        let sendAmounts = calculateResAmounts(
-            village.wood,
-            village.stone,
-            village.iron,
-            village.warehouseCapacity,
-            village.availableMerchants
-        );
+    function sendToTarget(villagesData, target, deficits) {
+        for (let village of villagesData) {
+            let sendAmounts = calculateResAmounts(
+                village.wood,
+                village.stone,
+                village.iron,
+                village.warehouseCapacity,
+                village.availableMerchants
+            );
 
-        let woodToSend = Math.min(sendAmounts.wood, deficits.woodNeeded);
-        let clayToSend = Math.min(sendAmounts.stone, deficits.clayNeeded);
-        let ironToSend = Math.min(sendAmounts.iron, deficits.ironNeeded);
+            let woodToSend = Math.min(sendAmounts.wood, deficits.woodNeeded);
+            let clayToSend = Math.min(sendAmounts.stone, deficits.clayNeeded);
+            let ironToSend = Math.min(sendAmounts.iron, deficits.ironNeeded);
 
-        if (woodToSend > 0 || clayToSend > 0 || ironToSend > 0) {
-            sendResource(village.id, target.id, woodToSend, clayToSend, ironToSend);
-            deficits.woodNeeded -= woodToSend;
-            deficits.clayNeeded -= clayToSend;
-            deficits.ironNeeded -= ironToSend;
-        }
+            if (woodToSend > 0 || clayToSend > 0 || ironToSend > 0) {
+                sendResource(village.id, target.id, woodToSend, clayToSend, ironToSend);
+                deficits.woodNeeded -= woodToSend;
+                deficits.clayNeeded -= clayToSend;
+                deficits.ironNeeded -= ironToSend;
+            }
 
-        if (deficits.woodNeeded === 0 && deficits.clayNeeded === 0 && deficits.ironNeeded === 0) {
-            break;
+            if (deficits.woodNeeded === 0 && deficits.clayNeeded === 0 && deficits.ironNeeded === 0) {
+                break;
+            }
         }
     }
-}
 
-function coordToId(coordinate) {
-    // Obter dados da aldeia alvo
-    var sitterID = game_data.player.sitter > 0
-        ? `game.php?t=${game_data.player.id}&screen=api&ajax=target_selection&input=${coordinate}&type=coord`
-        : `/game.php?&screen=api&ajax=target_selection&input=${coordinate}&type=coord`;
+    function coordToId(coordinate) {
+        // Obter dados da aldeia alvo
+        var sitterID = game_data.player.sitter > 0
+            ? `game.php?t=${game_data.player.id}&screen=api&ajax=target_selection&input=${coordinate}&type=coord`
+            : `/game.php?&screen=api&ajax=target_selection&input=${coordinate}&type=coord`;
 
-    $.get(sitterID, function (json) {
-        let data = parseFloat(game_data.majorVersion) > 8.217 ? json : JSON.parse(json);
-        let target = {
-            id: data.villages[0].id,
-            warehouseCapacity: data.villages[0].warehouse_capacity,
-            wood: data.villages[0].wood,
-            stone: data.villages[0].stone,
-            iron: data.villages[0].iron,
-        };
+        $.get(sitterID, function (json) {
+            let data = parseFloat(game_data.majorVersion) > 8.217 ? json : JSON.parse(json);
+            let target = {
+                id: data.villages[0].id,
+                warehouseCapacity: data.villages[0].warehouse_capacity,
+                wood: data.villages[0].wood,
+                stone: data.villages[0].stone,
+                iron: data.villages[0].iron,
+            };
 
-        let deficits = calculateDeficit(
-            target.warehouseCapacity,
-            woodTargetPercent,
-            clayTargetPercent,
-            ironTargetPercent,
-            target.wood,
-            target.stone,
-            target.iron
-        );
+            let deficits = calculateDeficit(
+                target.warehouseCapacity,
+                woodTargetPercent,
+                clayTargetPercent,
+                ironTargetPercent,
+                target.wood,
+                target.stone,
+                target.iron
+            );
 
-        sendToTarget(villagesData, target, deficits);
-    });
-}
+            sendToTarget(villagesData, target, deficits);
+        });
+    }
+
+    // Início do script
+    console.log("Script carregado via bookmarklet!");
+    createList();
+})();
